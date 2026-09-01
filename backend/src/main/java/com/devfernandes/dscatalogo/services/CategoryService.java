@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,14 @@ public class CategoryService {
 		Optional<Category> obj = categoryRepository.findById(id);
 		
 		Category entity = obj.orElseThrow(() -> new EntityNotFoundException("Entidade não encontrada")); 
+		return new CategoryDTO(entity);
+	}
+
+	@Transactional
+	public CategoryDTO insert(CategoryDTO dto) {
+		Category entity = new Category();
+		entity.setName(dto.getName());
+		entity = categoryRepository.save(entity);
 		return new CategoryDTO(entity);
 	}
 
