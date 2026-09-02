@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devfernandes.dscatalogo.dto.CategoryDTO;
 import com.devfernandes.dscatalogo.dto.ProductDTO;
+import com.devfernandes.dscatalogo.entities.Category;
 import com.devfernandes.dscatalogo.entities.Product;
+import com.devfernandes.dscatalogo.repositories.CategoryRepository;
 import com.devfernandes.dscatalogo.repositories.ProductRepository;
 import com.devfernandes.dscatalogo.services.exceptions.DatabaseException;
 import com.devfernandes.dscatalogo.services.exceptions.ResourceNotFoundException;
@@ -27,6 +30,10 @@ public class ProductService {
 	@Autowired
 	private ProductRepository repository;
 	
+
+	@Autowired
+	private CategoryRepository categoryRepository;
+	
 	@Transactional(readOnly =true)
 	public Page<ProductDTO> findAllPaged(PageRequest pageRequest) {
 		Page<Product> list = repository.findAll(pageRequest);
@@ -37,25 +44,32 @@ public class ProductService {
 	public ProductDTO findById( Long id) {
 		Optional<Product> obj = repository.findById(id);
 		
-		Product entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entidade não encontrada")); 
+		Product entity = obj.orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado")); 
 		return new ProductDTO(entity, entity.getCategories());
 	}
 
 	@Transactional
 	public ProductDTO insert(ProductDTO dto) {
 		Product entity = new Product();
-		//entity.setName(dto.getName());
+		
+		// o metodo foi emplementado la em baixo
+		CopyDtoToEntity(dto, entity);
+		
 		entity = repository.save(entity);
 		return new ProductDTO(entity);
 	}
+
+	
 
 	@Transactional
 	public ProductDTO update(Long id, ProductDTO dto) {
 
 		try {
 		Product entity = repository.getReferenceById(id);
-
-		//entity.setName(dto.getName());
+		
+		// o metodo foi emplementado la em baixo
+		CopyDtoToEntity(dto, entity);
+		
 		entity = repository.save(entity);
 		return new ProductDTO(entity);
 		
@@ -78,6 +92,27 @@ public class ProductService {
 	        	throw new DatabaseException("Falha de integridade referencial");
 	   	}
 	}
-
+	
+	
+	
+	
+	// o consumidor desse metodo está mentodo insert a updatate em cima
+	private void CopyDtoToEntity(ProductDTO dto, Product entity) {
+	
+		entity.setName(dto.getName());
+		entity.setDescription(dto.getDescription());
+		entity.setDate(dto.getDate());
+		entity.setImgUrl(dto.getImgUrl());
+		entity.setPrice(dto.getPrice());
+		
+		entity.getCategories().clear(); // apagar as possiveis categorias antes de instanciar as novas
+		
+		for(CategoryDTO catDto : dto.getCategories()) {
+			
+			Category category = categoryRepository.getOne(catDto.getId()); // usamos o funçao getOne ao envés do findById, para assinalar o id do produto que vamos atualizar
+			entity.getCategories().add(category);
+		}
+		
+	}
 	
 }
