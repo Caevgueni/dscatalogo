@@ -18,8 +18,8 @@ public class ProductDTO {
 	private String imgUrl;
 	private Instant date;
 	
-	List<CategoryDTO> categories = new ArrayList<>();
-
+	private List<CategoryDTO> categories = new ArrayList<>();
+	 
 	public ProductDTO() {
 	
 	}
@@ -34,17 +34,17 @@ public class ProductDTO {
 	}
 	
 	public ProductDTO(Product entity) {
-		id = entity.getId();
-		name = entity.getName();
-		description = entity.getDescription();
-		price = entity.getPrice();
-		imgUrl = entity.getImgUrl();
-		date = entity.getDate();
+		this.id = entity.getId();
+		this.name = entity.getName();
+		this.description = entity.getDescription();
+		this.price = entity.getPrice();
+		this.imgUrl = entity.getImgUrl();
+		this.date = entity.getDate();
 	}
 	
 	public ProductDTO(Product entity, Set<Category> categories) {
 		this(entity);
-		categories.forEach(x -> this.categories.add(new CategoryDTO(x)));
+		categories.forEach(cat -> this.categories.add(new CategoryDTO(cat)));
 	}
 	
 
