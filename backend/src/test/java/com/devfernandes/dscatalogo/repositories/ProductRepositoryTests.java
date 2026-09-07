@@ -22,11 +22,12 @@ private ProductRepository repository;
 private Integer countTatalProduct;
 
 private long existeId = 1L;
-
+private Long noExisteId = 1000L;
 @BeforeEach
 void setUp() throws Exception{
 	
-	existeId = 1L;
+	existeId = 11L;
+	
 	countTatalProduct = 25;
 	
 }
@@ -49,5 +50,19 @@ public void deleteShouldDeleteObjectWhendExists() {
 	Assertions.assertFalse(result.isPresent());
 }
 
+
+@Test
+public void findByIdShouldRetornNonEmptyOpcionalWhenIdExist() {
+	Optional<Product> result = repository.findById(existeId);
+	Assertions.assertTrue(result.isPresent());
+}
+
+
+@Test
+public void findByIdShouldRetornEmptyOpcionalWhenIdNotExist() {
+	
+	Optional<Product> result = repository.findById(noExisteId);
+	Assertions.assertTrue(result.isEmpty());
+}
 
 }
