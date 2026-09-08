@@ -102,11 +102,11 @@ public class UserService {
 
 		entity.getRoles().clear(); // apagar as possiveis roles antes de instanciar as novas
 
-		for (RoleDTO catDto : dto.getReleDto()) {
+		for (RoleDTO roleDto : dto.getRoles()) {
 
-			Role role = roleRepository.getOne(catDto.getId()); // usamos o funçao getOne ao envés do
+			Role role = roleRepository.getOne(roleDto.getId()); // usamos o funçao getOne ao envés do
 																			// findById, para assinalar o id do produto
-																			// que vamos atualizar
+																		// que vamos atualizar
 			entity.getRoles().add(role);
 		}
 

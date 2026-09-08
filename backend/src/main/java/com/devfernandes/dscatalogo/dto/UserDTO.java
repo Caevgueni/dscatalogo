@@ -54,9 +54,11 @@ public class UserDTO {
 		return email;
 	}
 
-	public Set<RoleDTO> getReleDto() {
+	public Set<RoleDTO> getRoles() {
 		return roles;
 	}
+
+	
 
 	
 	
