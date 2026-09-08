@@ -6,15 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devfernandes.dscatalogo.dto.RoleDTO;
 import com.devfernandes.dscatalogo.dto.UserDTO;
+import com.devfernandes.dscatalogo.dto.UserInsertDTO;
 import com.devfernandes.dscatalogo.entities.Role;
 import com.devfernandes.dscatalogo.entities.User;
 import com.devfernandes.dscatalogo.repositories.CategoryRepository;
+import com.devfernandes.dscatalogo.repositories.RoleRepository;
 import com.devfernandes.dscatalogo.repositories.UserRepository;
 import com.devfernandes.dscatalogo.services.exceptions.DatabaseException;
 import com.devfernandes.dscatalogo.services.exceptions.ResourceNotFoundException;
@@ -23,9 +26,15 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserService {
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
 	private UserRepository repository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
 
 	@Autowired
 	private CategoryRepository categoryRepository;
@@ -45,12 +54,10 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserDTO insert(UserDTO dto) {
+	public UserDTO insert(UserInsertDTO dto) {
 		User entity = new User();
-
-		// o metodo foi emplementado la em baixo
-		CopyDtoToEntity(dto, entity);
-
+		CopyDtoToEntity(dto, entity); // o metodo foi emplementado la em baixo
+        entity.setPassword(passwordEncoder.encode(dto.getPassword())); // passwordEncoder.encode codifica o password
 		entity = repository.save(entity);
 		return new UserDTO(entity);
 	}
@@ -97,10 +104,10 @@ public class UserService {
 
 		for (RoleDTO catDto : dto.getReleDto()) {
 
-			Role role = epository.getOne(catDto.getId()); // usamos o funçao getOne ao envés do
+			Role role = roleRepository.getOne(catDto.getId()); // usamos o funçao getOne ao envés do
 																			// findById, para assinalar o id do produto
 																			// que vamos atualizar
-			entity.getCategories().add(category);
+			entity.getRoles().add(role);
 		}
 
 	}

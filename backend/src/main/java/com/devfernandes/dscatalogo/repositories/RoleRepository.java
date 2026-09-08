@@ -3,9 +3,9 @@ package com.devfernandes.dscatalogo.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.devfernandes.dscatalogo.entities.User;
+import com.devfernandes.dscatalogo.entities.Role;
 
 @Repository
-public interface RoleRepository extends JpaRepository<User, Long> {
+public interface RoleRepository extends JpaRepository<Role, Long> {
 
 }
