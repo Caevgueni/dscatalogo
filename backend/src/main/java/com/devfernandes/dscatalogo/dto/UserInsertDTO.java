@@ -1,5 +1,8 @@
 package com.devfernandes.dscatalogo.dto;
 
+import com.devfernandes.dscatalogo.services.validatins.UserInsertValid;
+
+@UserInsertValid
 public class UserInsertDTO extends UserDTO{
 	
 	

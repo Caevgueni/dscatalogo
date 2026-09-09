@@ -3,9 +3,6 @@ package com.devfernandes.dscatalogo.controller.exception;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.mapping.PersistentProperty;
-import org.springframework.data.mapping.model.FieldNamingStrategy;
-
 public class ValidationError extends StandardError {
 	
 	
@@ -16,9 +13,6 @@ public class ValidationError extends StandardError {
 	public List<FieldMessage> getErrors() {
 		return errors;
 	}
-
-
-
 
 
 	public void addError(String fieldName, String message) {
