@@ -120,6 +120,7 @@ public class ProductService {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Page<ProductDTO> findAllPaged(String name, String categoryId, Pageable pageable){
 		
 		List<Long> categorieIds = Arrays.asList();
@@ -129,7 +130,7 @@ public class ProductService {
 		Page<ProductProjection> page = repository.searchProducts(categorieIds, name, pageable);
 		List<Long> productsIds = page.map(x -> x.getId()).toList();
 		List<Product> entities = repository.searchProductsWithCategories(productsIds);
-		entities =Utils.replace(page.getContent(), entities);
+		entities =(List<Product>) Utils.replace(page.getContent(), entities);
 		
 		List<ProductDTO> dtos = entities.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
 		Page<ProductDTO> pageDto = new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());

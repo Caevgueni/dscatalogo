@@ -1,8 +1,8 @@
 package com.devfernandes.dscatalogo.projections;
 
-public interface ProductProjection {
+public interface ProductProjection extends IdProjection<Long> {
 	
-	Long getId();
+	
 	String getName();
 
 }
