@@ -22,6 +22,7 @@ import com.devfernandes.dscatalogo.repositories.CategoryRepository;
 import com.devfernandes.dscatalogo.repositories.ProductRepository;
 import com.devfernandes.dscatalogo.services.exceptions.DatabaseException;
 import com.devfernandes.dscatalogo.services.exceptions.ResourceNotFoundException;
+import com.devfernandes.dscatalogo.util.Utils;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -128,6 +129,8 @@ public class ProductService {
 		Page<ProductProjection> page = repository.searchProducts(categorieIds, name, pageable);
 		List<Long> productsIds = page.map(x -> x.getId()).toList();
 		List<Product> entities = repository.searchProductsWithCategories(productsIds);
+		entities =Utils.replace(page.getContent(), entities);
+		
 		List<ProductDTO> dtos = entities.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
 		Page<ProductDTO> pageDto = new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
 		return pageDto;
