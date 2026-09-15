@@ -63,7 +63,13 @@ public class UserService implements UserDetailsService {
 	public UserDTO insert(UserInsertDTO dto) {
 		User entity = new User();
 		CopyDtoToEntity(dto, entity); // o metodo foi emplementado la em baixo
-        entity.setPassword(passwordEncoder.encode(dto.getPassword())); // passwordEncoder.encode codifica o password
+		
+		
+        entity.getRoles().clear(); //apgagmos todos os roles 
+        Role role = roleRepository.findByAuthority("ROLE_OPERATOR");// procuramos o "ROLE_OPERATOR"
+        entity.getRoles().add(role); // adicionamos esse "ROLE_OPERATOR" ao novo USER por defeito
+        
+		entity.setPassword(passwordEncoder.encode(dto.getPassword())); // passwordEncoder.encode codifica o password
 		entity = repository.save(entity);
 		return new UserDTO(entity);
 	}
@@ -73,7 +79,6 @@ public class UserService implements UserDetailsService {
 
 		try {
 			User entity = repository.getReferenceById(id);
-
 			// o metodo foi emplementado la em baixo
 			CopyDtoToEntity(dto, entity);
 
