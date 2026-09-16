@@ -1,13 +1,16 @@
 package com.devfernandes.dscatalogo.services;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.devfernandes.dscatalogo.dto.EmailDTO;
+import com.devfernandes.dscatalogo.dto.NewPasswordDTO;
 import com.devfernandes.dscatalogo.entities.PasswordRecover;
 import com.devfernandes.dscatalogo.entities.User;
 import com.devfernandes.dscatalogo.repositories.PasswordRecoverRepository;
@@ -27,6 +30,9 @@ public class AuthService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private EmailService emailService;
@@ -54,6 +60,22 @@ public class AuthService {
         		+ recoverUri  + token + ". Validade " + tokenMinutes + " minutos";
         
         emailService.sendEmail(body.getEmail(), "Recuperação de senha", text); //para quem que vai enviar o assunto e o corpo
+	}
+ 
+	@Transactional
+	public void saveNewPassword(NewPasswordDTO body) {
+		
+		List<PasswordRecover> result = passwordRecoverRepository.searchValidTokens(body.getToken(), Instant.now());
+		
+		if (result.size() == 0) {
+			throw new ResourceNotFoundException("Token invalido");
+
+		}
+		User user = userRepository.findByEmail(result.get(0).getEmail());
+		user.setPassword(passwordEncoder.encode(body.getPassword()));
+		user = userRepository.save(user);
+		
+		
 	}
 
 }
