@@ -22,8 +22,14 @@ public class AuthService {
 	@Value("${email.password-recover.token.minutes}") // para pegar o tempo em minintos configurado no application.properties 
 	private Long tokenMinutes;
 	
+	@Value("${email.password-recover.uri}") // o link que permite o user alterar email configurado no application.properties 
+	private String recoverUri;
+	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private EmailService emailService;
 	
 	@Autowired
 	private PasswordRecoverRepository passwordRecoverRepository;
@@ -35,12 +41,19 @@ public class AuthService {
 		if(user == null) {
 			throw new ResourceNotFoundException("Email nao encontrado");
 		}
+		String token = UUID.randomUUID().toString();// UUID.randomUUID() gera um numero ndomico grande que serve com token de recuperação
+		
 		PasswordRecover entity = new PasswordRecover();
         entity.setEmail(body.getEmail());
-        entity.setToken(UUID.randomUUID().toString()); // UUID.randomUUID() gera um numero ndomico grande que serve com token de recuperação
+        entity.setToken(token); 
         entity.setExpiration(Instant.now().plusSeconds(tokenMinutes*60L));
         
         entity = passwordRecoverRepository.save(entity);
+        
+        String text ="Acesse o link para definir uma nova senha\n\n"
+        		+ recoverUri  + token + ". Validade " + tokenMinutes + " minutos";
+        
+        emailService.sendEmail(body.getEmail(), "Recuperação de senha", text); //para quem que vai enviar o assunto e o corpo
 	}
 
 }
