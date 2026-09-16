@@ -39,6 +39,15 @@ public class UserController {
 		
 	}
 	
+	//obter o user logado
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
+	@GetMapping(value ="/me")
+	public ResponseEntity<UserDTO> findMe(){
+		UserDTO dto = service.findMe();
+		return ResponseEntity.ok().body(dto);
+		
+	}
+	
 	@GetMapping(value ="/{id}")
 	public ResponseEntity<UserDTO> findById(@PathVariable Long id){
 		UserDTO dto = service.findById(id);

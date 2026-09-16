@@ -44,6 +44,9 @@ public class UserService implements UserDetailsService {
 
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private AuthService authService;
 
 	@Transactional(readOnly = true)
 	public Page<UserDTO> findAllPaged(Pageable pageable) {
@@ -51,6 +54,15 @@ public class UserService implements UserDetailsService {
 		return list.map(x -> new UserDTO(x));
 	}
 
+	
+	//obter o user logado
+	@Transactional(readOnly = true)
+	public UserDTO findMe() {
+		User entity = authService.authenticated();
+
+		return new UserDTO(entity);
+	}
+	
 	@Transactional(readOnly = true)
 	public UserDTO findById(Long id) {
 		Optional<User> obj = repository.findById(id);
