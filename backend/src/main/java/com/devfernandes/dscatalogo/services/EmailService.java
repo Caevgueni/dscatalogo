@@ -7,7 +7,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.devfernandes.dscatalogo.entities.PasswordRecover;
 import com.devfernandes.dscatalogo.services.exceptions.EmailException;
+
+import jakarta.persistence.Entity;
 
 @Service
 public class EmailService {
@@ -30,5 +33,10 @@ public class EmailService {
         catch (MailException e){
         	throw new EmailException("Failed to send email");
         } 
+        
     }
+    
+   
+    
+    
 }
