@@ -4,9 +4,7 @@ import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,57 +15,61 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.devfernandes.dscatalogo.dto.ProductDTO;
-import com.devfernandes.dscatalogo.projections.ProductProjection;
+import com.devfernandes.dscatalogo.dto.UriDTO;
 import com.devfernandes.dscatalogo.services.ProductService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(value ="/products")
+@RequestMapping(value = "/products")
 public class ProductController {
-	
+
 	@Autowired
 	private ProductService service;
-	
+
 	@GetMapping
-	public ResponseEntity<Page<ProductDTO>> findAll(
-			@RequestParam(value ="name", defaultValue = "") String name,
-			@RequestParam(value ="categoryId", defaultValue = "0") String categoryId,
-			Pageable pageable){
-		
+	public ResponseEntity<Page<ProductDTO>> findAll(@RequestParam(value = "name", defaultValue = "") String name,
+			@RequestParam(value = "categoryId", defaultValue = "0") String categoryId, Pageable pageable) {
+
 		Page<ProductDTO> list = service.findAllPaged(name, categoryId, pageable);
 		return ResponseEntity.ok().body(list);
-		
+
 	}
-	
-	@GetMapping(value ="/{id}")
-	public ResponseEntity<ProductDTO> findById(@PathVariable Long id){
+
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
 		ProductDTO dto = service.findById(id);
 		return ResponseEntity.ok().body(dto);
-		
+
 	}
-	
+
 	@PostMapping
-	public ResponseEntity<ProductDTO> insert(@Valid @RequestBody ProductDTO dto){
+	public ResponseEntity<ProductDTO> insert(@Valid @RequestBody ProductDTO dto) {
 		dto = service.insert(dto);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(dto.getId()).toUri();
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);
 	}
-	
-	@PutMapping(value ="/{id}")
-	public ResponseEntity<ProductDTO> update(@PathVariable Long id, @Valid @RequestBody ProductDTO dto){
+
+	@PostMapping(value ="/image")
+	public ResponseEntity<UriDTO> uploadImage(@RequestParam("file") MultipartFile file){
+		UriDTO dto = service.uploadFile(file);
+		return ResponseEntity.ok().body(dto);
+	}
+
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<ProductDTO> update(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) {
 		dto = service.update(id, dto);
 		return ResponseEntity.ok().body(dto);
 	}
-	
-	@DeleteMapping(value ="/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id){
+
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
 	}
-	
+
 }
